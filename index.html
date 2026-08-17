@@ -1,0 +1,843 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>薬局コミュニケーション｜指差し・文字で伝える薬局支援ツール</title>
+<meta name="description" content="薬局での受付、症状、安全確認、薬の説明、理解確認を、指差しと文字で支援するブラウザ上のコミュニケーションツールです。">
+<meta name="theme-color" content="#0017c1">
+<meta name="color-scheme" content="light">
+<meta name="robots" content="index,follow">
+<meta property="og:type" content="website">
+<meta property="og:locale" content="ja_JP">
+<meta property="og:site_name" content="薬局コミュニケーション">
+<meta property="og:title" content="薬局コミュニケーション｜指差し・文字で伝える薬局支援ツール">
+<meta property="og:description" content="薬局での受付、症状、安全確認、薬の説明、理解確認を、指差しと文字で支援するブラウザ上のコミュニケーションツールです。">
+<meta property="og:image" content="og-image.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta property="og:image:alt" content="薬局コミュニケーション 指差し・文字で伝える薬局支援ツール">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="薬局コミュニケーション｜指差し・文字で伝える薬局支援ツール">
+<meta name="twitter:description" content="薬局でのやりとりを、指差しと文字で支援するブラウザ上のコミュニケーションツールです。">
+<meta name="twitter:image" content="og-image.png">
+<link rel="icon" href="favicon.svg" type="image/svg+xml">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="favicon-32x32.png" type="image/png" sizes="32x32">
+<link rel="apple-touch-icon" href="apple-touch-icon.png" sizes="180x180">
+<link rel="manifest" href="site.webmanifest">
+<style>
+:root{--bg:#f4f7f8;--card:#fff;--ink:#1e2a30;--muted:#63737c;--line:#d5e0e4;--main:#2f7182;--soft:#e7f2f5;--warn:#fff4d9;--danger:#a33c3c}
+*{box-sizing:border-box}body{margin:0;background:var(--bg);color:var(--ink);font-family:-apple-system,BlinkMacSystemFont,"Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;line-height:1.65}
+button,input,select,textarea{font:inherit}.app{max-width:1320px;margin:auto;padding:26px}.head{display:flex;justify-content:space-between;gap:20px;align-items:flex-start}.head h1{margin:0;font-size:clamp(32px,4.5vw,48px);line-height:1.25}.sub{margin:.5rem 0 0;color:var(--muted);font-size:20px}
+.lang{min-width:235px;background:#fff;border:1px solid var(--line);border-radius:14px;padding:12px}.lang label{font-weight:800;display:block;margin-bottom:5px}.lang select{width:100%;padding:10px;border:1px solid var(--line);border-radius:10px;background:#fff}
+.notice{margin:18px 0;background:var(--warn);border-left:5px solid #d59c30;padding:13px 15px;border-radius:10px}
+.nav{display:grid;grid-template-columns:repeat(7,1fr);gap:7px;margin-bottom:18px}.nav button{min-height:64px;padding:12px 8px;border:1px solid var(--line);border-radius:12px;background:#fff;font-weight:850;font-size:18px;cursor:pointer}.nav button.active{background:var(--main);color:#fff;border-color:var(--main)}
+.page{display:none}.page.active{display:block}.card{background:var(--card);border:1px solid var(--line);border-radius:18px;padding:21px;margin-bottom:18px;box-shadow:0 8px 25px rgba(30,42,48,.07)}h2{margin:0 0 7px;font-size:34px}.lead{color:var(--muted);margin:0 0 20px;font-size:21px}.sect{font-size:27px;border-left:6px solid var(--main);padding-left:12px;margin:26px 0 13px}
+.grid{display:grid;grid-template-columns:repeat(auto-fit,minmax(240px,1fr));gap:14px}.choice{position:relative}.choice input{position:absolute;opacity:0}.choice label{min-height:92px;display:flex;align-items:center;gap:14px;border:3px solid var(--line);border-radius:16px;padding:17px 18px;background:#fff;font-weight:800;font-size:22px;cursor:pointer}.choice input:checked+label{border-color:var(--main);background:var(--soft);box-shadow:0 0 0 3px rgba(47,113,130,.1)}.ico{font-size:34px;width:42px;text-align:center;flex:0 0 42px}
+.fields{display:grid;grid-template-columns:repeat(auto-fit,minmax(215px,1fr));gap:12px;margin-top:12px}.field{display:flex;flex-direction:column;gap:5px}.field label{font-weight:850;font-size:21px}.field input,.field textarea,.field select{min-height:58px;padding:13px 14px;border:2px solid var(--line);border-radius:12px;background:#fff;font-size:21px}.field textarea{min-height:88px;resize:vertical}
+.actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:18px}.btn{min-height:64px;border:0;border-radius:13px;padding:14px 22px;font-weight:900;font-size:21px;cursor:pointer}.primary{background:var(--main);color:#fff}.secondary{background:#e9eef0}.print{background:#1f2a30;color:#fff}.reset{background:#f3e4e4;color:var(--danger)}
+.summary{border:1px solid var(--line);border-radius:13px;padding:14px;margin:10px 0}.summary h3{margin:0 0 8px}.empty{color:var(--muted);font-style:italic}.drug-card{border:2px solid #bdd0d6;border-radius:15px;padding:15px;background:#fbfdfd}.drug-title{display:flex;justify-content:space-between;align-items:center;gap:10px}.drug-title h3{margin:0}.badge{background:var(--soft);color:var(--main);padding:3px 9px;border-radius:999px;font-size:13px;font-weight:800}
+.time-row{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}.time-box{border:1px solid var(--line);border-radius:12px;padding:11px;text-align:center}.time-box strong{display:block;font-size:18px}.print-sheet{display:none}.small{font-size:18px;color:var(--muted)}.critical{border:2px solid #d48a8a;background:#fff7f7}
+@media(max-width:900px){.nav{grid-template-columns:repeat(2,1fr)}.head{flex-direction:column}.lang{width:100%}.time-row{grid-template-columns:1fr 1fr}}
+@media print{
+ body{background:#fff}.screen{display:none!important}.print-sheet{display:block!important;color:#000;font-size:11.5pt}.print-sheet h1{font-size:21pt;margin:0}.print-sheet h2{font-size:14pt;border-left:5px solid #000;padding-left:8px;margin:12px 0 6px}.print-box{border:1.4px solid #000;padding:9px 11px;margin-bottom:8px;break-inside:avoid}.print-box ul{margin:0;padding-left:1.25em}.print-meta{display:flex;justify-content:space-between;border-bottom:3px solid #000;padding-bottom:7px;margin-bottom:10px}.print-footer{border-top:1px solid #000;margin-top:15px;padding-top:7px;font-size:10pt}@page{size:A4 portrait;margin:13mm}
+}
+
+/* ===== Ver.5: デジタル庁デザインシステムを参考にした簡潔な外観 ===== */
+:root{
+  --bg:#ffffff;
+  --card:#ffffff;
+  --ink:#1a1a1a;
+  --muted:#4b5563;
+  --line:#949494;
+  --main:#0017c1;
+  --main-hover:#00118f;
+  --soft:#f2f5ff;
+  --focus:#ffd43b;
+  --danger:#b40000;
+}
+body{
+  background:#fff;
+  color:var(--ink);
+  font-family:-apple-system,BlinkMacSystemFont,"Noto Sans JP","Hiragino Kaku Gothic ProN","Yu Gothic",Meiryo,sans-serif;
+  font-size:18px;
+}
+.app{max-width:1280px;padding:32px 28px 56px}
+.head{
+  padding-bottom:24px;
+  border-bottom:1px solid #d0d0d0;
+  align-items:center;
+}
+.head h1{
+  font-size:clamp(34px,4vw,48px);
+  font-weight:700;
+  letter-spacing:.01em;
+}
+.sub{font-size:20px;color:#333;margin-top:10px}
+.lang{
+  min-width:260px;
+  border:1px solid #777;
+  border-radius:4px;
+  padding:14px;
+  box-shadow:none;
+}
+.lang label{font-size:17px}
+.lang select{
+  min-height:52px;
+  border:1px solid #777;
+  border-radius:4px;
+  font-size:19px;
+}
+.notice{
+  margin:24px 0;
+  padding:16px 18px;
+  background:#f7f7f7;
+  border:0;
+  border-left:6px solid var(--main);
+  border-radius:0;
+  font-size:18px;
+}
+.nav{
+  grid-template-columns:repeat(7,minmax(0,1fr));
+  gap:0;
+  border-bottom:2px solid var(--main);
+  margin:0 0 36px;
+}
+.nav button{
+  min-height:64px;
+  border:0;
+  border-right:1px solid #d0d0d0;
+  border-radius:0;
+  background:#fff;
+  color:#222;
+  font-size:17px;
+  font-weight:700;
+  padding:12px 8px;
+}
+.nav button:first-child{border-left:1px solid #d0d0d0}
+.nav button.active{
+  background:var(--main);
+  color:#fff;
+}
+.nav button:hover{background:#eef1ff}
+.nav button.active:hover{background:var(--main-hover)}
+.card{
+  border:0;
+  border-radius:0;
+  box-shadow:none;
+  padding:0;
+  margin-bottom:32px;
+}
+h2{
+  font-size:36px;
+  font-weight:700;
+  line-height:1.4;
+  padding-bottom:14px;
+  border-bottom:3px solid #222;
+}
+.lead{
+  font-size:21px;
+  color:#333;
+  max-width:860px;
+  margin-bottom:32px;
+}
+.sect{
+  font-size:28px;
+  border-left:0;
+  padding:0 0 10px;
+  margin:38px 0 18px;
+  border-bottom:2px solid #777;
+}
+.grid{
+  grid-template-columns:repeat(auto-fit,minmax(260px,1fr));
+  gap:12px;
+}
+.choice label{
+  min-height:92px;
+  border:2px solid #777;
+  border-radius:4px;
+  padding:18px 20px;
+  background:#fff;
+  font-size:22px;
+  font-weight:700;
+  box-shadow:none;
+}
+.choice label:hover{
+  background:#f5f7ff;
+  border-color:var(--main);
+}
+.choice input:checked+label{
+  border:3px solid var(--main);
+  background:var(--soft);
+  box-shadow:inset 7px 0 0 var(--main);
+}
+.choice input:focus-visible+label{
+  outline:4px solid var(--focus);
+  outline-offset:3px;
+}
+.ico{
+  font-size:31px;
+  width:42px;
+  flex-basis:42px;
+}
+.fields{
+  gap:20px;
+  margin-top:20px;
+}
+.field label{
+  font-size:20px;
+  font-weight:700;
+}
+.field input,.field textarea,.field select{
+  min-height:60px;
+  border:2px solid #777;
+  border-radius:4px;
+  font-size:21px;
+  padding:13px 15px;
+}
+.field input:focus,.field textarea:focus,.field select:focus{
+  outline:4px solid var(--focus);
+  outline-offset:2px;
+  border-color:#111;
+}
+.actions{
+  padding-top:28px;
+  margin-top:34px;
+  border-top:1px solid #d0d0d0;
+}
+.btn{
+  min-height:62px;
+  border-radius:4px;
+  padding:14px 24px;
+  font-size:21px;
+  font-weight:700;
+}
+.primary,.print{background:var(--main);color:#fff}
+.primary:hover,.print:hover{background:var(--main-hover)}
+.secondary{
+  background:#fff;
+  border:2px solid #555;
+}
+.reset{
+  background:#fff;
+  color:var(--danger);
+  border:2px solid var(--danger);
+}
+.summary{
+  border:1px solid #777;
+  border-radius:0;
+  padding:18px 20px;
+  margin:16px 0;
+}
+.summary h3{font-size:23px}
+.drug-card{
+  border:1px solid #777;
+  border-radius:0;
+  padding:24px;
+  background:#fff;
+}
+.badge{
+  border-radius:2px;
+  background:#eef1ff;
+  color:#0017c1;
+}
+.critical{
+  border:3px solid #b40000;
+  border-radius:0;
+  background:#fff5f5;
+  padding:20px;
+  margin-top:24px;
+}
+.small{font-size:18px;color:#333}
+.footer-note{font-size:15px;color:#555}
+@media(max-width:900px){
+  .nav{grid-template-columns:1fr 1fr;border-bottom:0;gap:4px}
+  .nav button{border:1px solid #aaa!important}
+}
+@media(max-width:640px){
+  .app{padding:20px 16px 40px}
+  .head h1{font-size:32px}
+  h2{font-size:30px}
+  .sect{font-size:25px}
+  .choice label{font-size:20px;min-height:84px}
+}
+
+
+/* ===== Ver.5.1: 選択状態を明確化 ===== */
+.choice label{
+  position:relative;
+  transition:
+    background-color .15s ease,
+    color .15s ease,
+    border-color .15s ease,
+    transform .15s ease,
+    box-shadow .15s ease;
+}
+.choice label::after{
+  content:"";
+  position:absolute;
+  top:10px;
+  right:12px;
+  width:28px;
+  height:28px;
+  border:2px solid #777;
+  background:#fff;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  font-size:20px;
+  font-weight:900;
+  line-height:1;
+}
+.choice input:checked + label{
+  background:var(--main);
+  color:#fff;
+  border-color:var(--main);
+  box-shadow:none;
+  transform:scale(1.015);
+}
+.choice input:checked + label::after{
+  content:"✓";
+  color:var(--main);
+  border-color:#fff;
+  background:#fff;
+}
+.choice input:checked + label .ico{
+  filter:saturate(1.15);
+}
+.choice label:active{
+  transform:scale(.985);
+}
+.choice input:focus-visible + label{
+  outline:4px solid var(--focus);
+  outline-offset:4px;
+}
+.nav button.completed{
+  background:#eef8f1;
+  color:#166534;
+  border-color:#85b995;
+}
+.nav button.completed::before{
+  content:"✓ ";
+  font-weight:900;
+}
+.nav button.completed.active{
+  background:var(--main);
+  color:#fff;
+}
+.nav button.completed.active::before{
+  color:#fff;
+}
+.btn{
+  transition:background-color .15s ease,transform .15s ease;
+}
+.btn:active{
+  transform:scale(.98);
+}
+@media(prefers-reduced-motion:reduce){
+  .choice label,.btn{transition:none}
+  .choice input:checked + label,.choice label:active,.btn:active{transform:none}
+}
+
+
+/* ===== Ver.5.2: チェック欄と文章の重なり防止 ===== */
+.choice label{
+  display:grid;
+  grid-template-columns:52px minmax(0,1fr) 40px;
+  align-items:center;
+  column-gap:14px;
+  padding:18px 18px 18px 16px;
+}
+.choice label::after{
+  position:static;
+  grid-column:3;
+  grid-row:1;
+  justify-self:end;
+  align-self:start;
+  margin-top:0;
+  width:30px;
+  height:30px;
+}
+.choice label .ico{
+  grid-column:1;
+  grid-row:1;
+  align-self:center;
+}
+.choice label span[data-label]{
+  grid-column:2;
+  grid-row:1;
+  min-width:0;
+  line-height:1.55;
+  overflow-wrap:anywhere;
+  word-break:normal;
+}
+@media(max-width:640px){
+  .choice label{
+    grid-template-columns:44px minmax(0,1fr) 36px;
+    column-gap:10px;
+    padding:15px 14px;
+  }
+  .choice label::after{width:28px;height:28px}
+}
+
+
+.display-controls{
+  display:grid;
+  grid-template-columns:repeat(2,minmax(220px,1fr));
+  gap:12px;
+  min-width:520px;
+}
+.mode-badge{
+  display:inline-flex;
+  align-items:center;
+  gap:8px;
+  margin-top:14px;
+  padding:8px 12px;
+  border:2px solid var(--main);
+  background:var(--soft);
+  color:var(--main);
+  font-weight:800;
+}
+.patient-mode .pharmacist-only{
+  display:none !important;
+}
+.patient-mode .field.patient-optional{
+  display:none !important;
+}
+.patient-mode .lead{
+  max-width:760px;
+}
+.patient-mode .choice label{
+  min-height:100px;
+  font-size:23px;
+}
+.patient-mode .nav button[data-page="medicine"]::after,
+.patient-mode .nav button[data-page="external"]::after{
+  content:"（説明）";
+  display:block;
+  font-size:13px;
+  font-weight:500;
+}
+@media(max-width:900px){
+  .display-controls{min-width:0;width:100%;grid-template-columns:1fr}
+}
+
+
+/* ===== GitHub Pages public edition ===== */
+.skip-link{position:absolute;left:-9999px;top:auto}.skip-link:focus{left:16px;top:16px;z-index:9999;background:#fff;color:#111;border:3px solid var(--focus);padding:12px 16px;font-weight:700}
+.public-intro{margin:24px 0 18px;padding:18px 20px;border:1px solid #c8c8c8;background:#fafafa}.public-intro strong{display:block;font-size:20px;margin-bottom:4px}
+.conversation-tool{margin:24px 0 34px;border:3px solid var(--main);padding:22px;background:#fff}.conversation-tool h2{margin:0 0 8px;border:0;padding:0;font-size:30px}.conversation-tool .lead{margin-bottom:18px}.conversation-grid{display:grid;grid-template-columns:1fr 1fr;gap:18px}.conversation-pane{border:1px solid #777;padding:18px;background:#fff}.conversation-pane h3{margin:0 0 12px;font-size:22px}.conversation-pane textarea{width:100%;min-height:140px;border:2px solid #555;padding:14px;font-size:26px;line-height:1.55;resize:vertical}.conversation-pane textarea:focus{outline:4px solid var(--focus);outline-offset:2px}.conversation-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:10px}.conversation-display{min-height:110px;margin-top:12px;padding:18px;border:2px solid #222;background:#fff;font-size:clamp(28px,4vw,48px);font-weight:700;line-height:1.5;white-space:pre-wrap;overflow-wrap:anywhere}.conversation-display:empty::before{content:"ここに大きく表示されます";color:#666;font-size:20px;font-weight:500}.utility-note{font-size:16px;color:#444;margin:14px 0 0}.site-footer{margin-top:48px;padding:24px 0 8px;border-top:1px solid #ccc;color:#444;font-size:15px}.site-footer p{max-width:900px}.noscript{margin:20px 0;padding:14px 16px;border:2px solid #b40000;background:#fff5f5;font-weight:700}
+@media(max-width:800px){.conversation-grid{grid-template-columns:1fr}.conversation-tool{padding:16px}.conversation-pane textarea{font-size:22px}}
+@media print{.conversation-tool,.public-intro,.site-footer,.skip-link,.noscript{display:none!important}}
+
+
+/* ===== Public landing: simpler first screen for general users ===== */
+.hero-simple{padding:34px 0 22px;border-bottom:1px solid #d8d8d8}.hero-simple h1{margin:0;font-size:clamp(34px,5vw,52px);line-height:1.25}.hero-simple .hero-lead{margin:14px 0 0;max-width:820px;font-size:clamp(20px,2.4vw,27px);line-height:1.7;color:#2b2b2b}.start-panel{margin:26px 0 22px}.start-panel h2{border:0;padding:0;margin:0 0 14px;font-size:28px}.start-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}.start-card{display:flex;flex-direction:column;align-items:flex-start;justify-content:center;min-height:150px;padding:24px;border:2px solid #777;background:#fff;text-decoration:none;color:inherit;cursor:pointer}.start-card:hover{border-color:var(--main);background:#f7f8ff}.start-card:focus-visible{outline:4px solid var(--focus);outline-offset:4px}.start-card.primary-start{border:3px solid var(--main);background:var(--soft)}.start-icon{font-size:38px;line-height:1;margin-bottom:12px}.start-card strong{font-size:25px;line-height:1.45}.start-card span{margin-top:8px;font-size:17px;line-height:1.6;color:#444}.settings-box{margin:20px 0 18px;border:1px solid #aaa;background:#fff}.settings-box summary{padding:16px 18px;font-weight:700;font-size:18px;cursor:pointer}.settings-box summary:focus-visible{outline:4px solid var(--focus);outline-offset:2px}.settings-inner{padding:0 18px 18px}.settings-inner .display-controls{min-width:0;width:100%;grid-template-columns:repeat(2,minmax(220px,1fr))}.privacy-compact{margin:16px 0 26px;padding:12px 14px;background:#f7f7f7;border-left:5px solid var(--main);font-size:16px;color:#333}.section-kicker{margin:34px 0 10px;font-size:18px;font-weight:700;color:var(--main)}
+@media(max-width:760px){.start-grid{grid-template-columns:1fr}.start-card{min-height:130px;padding:20px}.settings-inner .display-controls{grid-template-columns:1fr}.hero-simple{padding-top:22px}}
+@media print{.hero-simple,.start-panel,.settings-box,.privacy-compact{display:none!important}}
+
+</style>
+</head>
+<body>
+<a class="skip-link" href="#main">本文へ移動</a>
+<div class="app screen" id="main">
+<noscript><div class="noscript">このツールを利用するにはJavaScriptを有効にしてください。</div></noscript>
+<header class="hero-simple" aria-labelledby="siteTitle">
+  <h1 id="siteTitle" data-t="title">薬局コミュニケーション</h1>
+  <p class="hero-lead">薬局で伝えたいこと、聞きたいことを、<strong>指差しや文字</strong>でやりとりするためのツールです。</p>
+</header>
+
+<section class="start-panel" aria-labelledby="startTitle">
+  <h2 id="startTitle">どの方法を使いますか？</h2>
+  <div class="start-grid">
+    <button type="button" class="start-card primary-start" id="startPointing">
+      <span class="start-icon" aria-hidden="true">☝️</span>
+      <strong>指差しで伝える</strong>
+      <span>用件・症状・薬について、画面を見ながら選びます。</span>
+    </button>
+    <button type="button" class="start-card" id="startConversation">
+      <span class="start-icon" aria-hidden="true">✍️</span>
+      <strong>文字で会話する</strong>
+      <span>伝えたい文章を入力して、大きな文字で見せます。</span>
+    </button>
+  </div>
+</section>
+
+<details class="settings-box">
+  <summary>表示の設定を変える</summary>
+  <div class="settings-inner">
+    <div class="display-controls">
+      <div class="lang">
+        <label data-t="language">表示することば</label>
+        <select id="lang">
+          <option value="ja">日本語</option>
+          <option value="easy">やさしい日本語</option>
+        </select>
+      </div>
+      <div class="lang">
+        <label data-t="mode_label">表示モード</label>
+        <select id="viewMode">
+          <option value="patient" data-t-option="mode_patient">患者さん向け</option>
+          <option value="pharmacist" data-t-option="mode_pharmacist">薬剤師向け</option>
+        </select>
+      </div>
+    </div>
+    <div id="modeBadge" class="mode-badge"></div>
+  </div>
+</details>
+
+<div class="privacy-compact" data-t="privacy">入力内容は保存・送信されません。印刷後は「内容を消去」を押してください。</div>
+
+<section class="conversation-tool" id="conversationTool" aria-labelledby="conversationTitle">
+  <h2 id="conversationTitle">文字で会話する</h2>
+  <p class="lead">定型の指差し項目では伝えにくい内容を、相手に見せやすい大きな文字で表示できます。</p>
+  <div class="conversation-grid">
+    <div class="conversation-pane">
+      <h3>薬局から伝える</h3>
+      <label for="staffMessage" class="small">伝えたい内容</label>
+      <textarea id="staffMessage" autocomplete="off" placeholder="例：この薬は朝食後に1錠飲んでください。"></textarea>
+      <div class="conversation-actions">
+        <button type="button" class="btn primary" data-large-source="staffMessage" data-large-target="staffDisplay">大きく表示</button>
+        <button type="button" class="btn secondary" data-clear-message="staffMessage" data-clear-target="staffDisplay">消す</button>
+      </div>
+      <div id="staffDisplay" class="conversation-display" role="status" aria-live="polite"></div>
+    </div>
+    <div class="conversation-pane">
+      <h3>利用する方から伝える</h3>
+      <label for="userMessage" class="small">伝えたい内容</label>
+      <textarea id="userMessage" autocomplete="off" placeholder="例：この薬を飲むと眠くなります。"></textarea>
+      <div class="conversation-actions">
+        <button type="button" class="btn primary" data-large-source="userMessage" data-large-target="userDisplay">大きく表示</button>
+        <button type="button" class="btn secondary" data-clear-message="userMessage" data-clear-target="userDisplay">消す</button>
+      </div>
+      <div id="userDisplay" class="conversation-display" role="status" aria-live="polite"></div>
+    </div>
+  </div>
+  <p class="utility-note">この会話欄の内容もサーバーへ送信せず、ページを閉じると消えます。医薬品名・用量など重要な内容は、表示した文字を双方で確認してください。</p>
+</section>
+
+<div class="section-kicker">指差しで確認する</div>
+<nav class="nav" id="pointingTool">
+<button class="active" data-page="reception" data-t="nav1">1 受付</button>
+<button data-page="symptoms" data-t="nav2">2 症状</button>
+<button data-page="safety" data-t="nav3">3 安全確認</button>
+<button data-page="medicine" data-t="nav4">4 薬の説明</button>
+<button data-page="external" data-t="nav5">5 外用薬</button>
+<button data-page="teachback" data-t="nav6">6 理解確認</button>
+<button data-page="review" data-t="nav7">7 確認・印刷</button>
+</nav>
+
+<section id="reception" class="page active">
+<div class="card"><h2 data-t="r_title">受付で確認すること</h2><p class="lead" data-t="r_lead">今日の用件と、どのようにお知らせするかを選びます。</p>
+<h3 class="sect" data-t="comm">希望するコミュニケーション方法</h3>
+<div class="grid" data-group="reception">
+<div class="choice"><input type="checkbox" id="comm_point" data-code="comm_point"><label for="comm_point"><span class="ico">☝️</span><span data-label="comm_point"></span></label></div><div class="choice"><input type="checkbox" id="comm_write" data-code="comm_write"><label for="comm_write"><span class="ico">✍️</span><span data-label="comm_write"></span></label></div><div class="choice"><input type="checkbox" id="comm_phone" data-code="comm_phone"><label for="comm_phone"><span class="ico">📱</span><span data-label="comm_phone"></span></label></div><div class="choice"><input type="checkbox" id="comm_slow" data-code="comm_slow"><label for="comm_slow"><span class="ico">💬</span><span data-label="comm_slow"></span></label></div><div class="choice"><input type="checkbox" id="comm_lip" data-code="comm_lip"><label for="comm_lip"><span class="ico">👄</span><span data-label="comm_lip"></span></label></div><div class="choice"><input type="checkbox" id="comm_support" data-code="comm_support"><label for="comm_support"><span class="ico">👥</span><span data-label="comm_support"></span></label></div>
+</div>
+<h3 class="sect" data-t="purpose">今日の用件</h3><div class="grid" data-group="reception">
+<div class="choice"><input type="checkbox" id="purpose_rx" data-code="purpose_rx"><label for="purpose_rx"><span class="ico">📄</span><span data-label="purpose_rx"></span></label></div><div class="choice"><input type="checkbox" id="purpose_receive" data-code="purpose_receive"><label for="purpose_receive"><span class="ico">💊</span><span data-label="purpose_receive"></span></label></div><div class="choice"><input type="checkbox" id="purpose_consult" data-code="purpose_consult"><label for="purpose_consult"><span class="ico">❓</span><span data-label="purpose_consult"></span></label></div><div class="choice"><input type="checkbox" id="purpose_otc" data-code="purpose_otc"><label for="purpose_otc"><span class="ico">🛍️</span><span data-label="purpose_otc"></span></label></div><div class="choice"><input type="checkbox" id="purpose_sideeffect" data-code="purpose_sideeffect"><label for="purpose_sideeffect"><span class="ico">⚠️</span><span data-label="purpose_sideeffect"></span></label></div><div class="choice"><input type="checkbox" id="purpose_shortage" data-code="purpose_shortage"><label for="purpose_shortage"><span class="ico">📦</span><span data-label="purpose_shortage"></span></label></div><div class="choice"><input type="checkbox" id="purpose_payment" data-code="purpose_payment"><label for="purpose_payment"><span class="ico">💳</span><span data-label="purpose_payment"></span></label></div>
+</div>
+<h3 class="sect" data-t="reception_confirm_title">薬局から確認すること</h3>
+<div class="grid" data-group="reception">
+<div class="choice"><input type="checkbox" id="recept_myna_yes" data-code="recept_myna_yes"><label for="recept_myna_yes"><span class="ico">🪪</span><span data-label="recept_myna_yes"></span></label></div>
+<div class="choice"><input type="checkbox" id="recept_myna_no" data-code="recept_myna_no"><label for="recept_myna_no"><span class="ico">❌</span><span data-label="recept_myna_no"></span></label></div>
+<div class="choice"><input type="checkbox" id="recept_medbook_yes" data-code="recept_medbook_yes"><label for="recept_medbook_yes"><span class="ico">📖</span><span data-label="recept_medbook_yes"></span></label></div>
+<div class="choice"><input type="checkbox" id="recept_medbook_home" data-code="recept_medbook_home"><label for="recept_medbook_home"><span class="ico">🏠</span><span data-label="recept_medbook_home"></span></label></div>
+<div class="choice"><input type="checkbox" id="recept_medbook_app" data-code="recept_medbook_app"><label for="recept_medbook_app"><span class="ico">📱</span><span data-label="recept_medbook_app"></span></label></div>
+<div class="choice"><input type="checkbox" id="recept_medbook_no" data-code="recept_medbook_no"><label for="recept_medbook_no"><span class="ico">❌</span><span data-label="recept_medbook_no"></span></label></div>
+</div>
+<h3 class="sect" data-t="call">準備ができたときのお知らせ方法</h3><div class="grid" data-group="reception">
+<div class="choice"><input type="radio" name="call" id="call_near" data-code="call_near"><label for="call_near"><span class="ico">👋</span><span data-label="call_near"></span></label></div><div class="choice"><input type="radio" name="call" id="call_number" data-code="call_number"><label for="call_number"><span class="ico">🔢</span><span data-label="call_number"></span></label></div><div class="choice"><input type="radio" name="call" id="call_screen" data-code="call_screen"><label for="call_screen"><span class="ico">📱</span><span data-label="call_screen"></span></label></div><div class="choice"><input type="radio" name="call" id="call_support" data-code="call_support"><label for="call_support"><span class="ico">👥</span><span data-label="call_support"></span></label></div>
+</div>
+<div class="fields">
+<div class="field"><label data-t="wait">待ち時間</label><select id="wait"><option value=""></option><option>約5分</option><option>約10分</option><option>約15分</option><option>約30分</option><option>30分以上</option></select></div>
+<div class="field"><label data-t="delay">時間がかかる理由</label><select id="delay"><option value=""></option><option>医師への確認が必要です</option><option>薬を取り寄せます</option><option>薬の準備に時間がかかります</option></select></div>
+</div><div class="actions"><button class="btn primary" data-next="symptoms" data-t="next">次へ</button></div></div>
+</section>
+
+<section id="symptoms" class="page">
+<div class="card"><h2 data-t="s_title">症状を伝える</h2><p class="lead" data-t="s_lead">「どこ」「どんな症状」「いつから」「どの程度」を分けて確認します。</p>
+<h3 class="sect" data-t="where">どこですか</h3><div class="grid" data-group="symptoms">
+<div class="choice"><input type="checkbox" id="part_head" data-code="part_head"><label for="part_head"><span class="ico">🧠</span><span data-label="part_head"></span></label></div><div class="choice"><input type="checkbox" id="part_eye" data-code="part_eye"><label for="part_eye"><span class="ico">👁️</span><span data-label="part_eye"></span></label></div><div class="choice"><input type="checkbox" id="part_throat" data-code="part_throat"><label for="part_throat"><span class="ico">👄</span><span data-label="part_throat"></span></label></div><div class="choice"><input type="checkbox" id="part_chest" data-code="part_chest"><label for="part_chest"><span class="ico">🫁</span><span data-label="part_chest"></span></label></div><div class="choice"><input type="checkbox" id="part_abdomen" data-code="part_abdomen"><label for="part_abdomen"><span class="ico">🟠</span><span data-label="part_abdomen"></span></label></div><div class="choice"><input type="checkbox" id="part_back" data-code="part_back"><label for="part_back"><span class="ico">🧍</span><span data-label="part_back"></span></label></div><div class="choice"><input type="checkbox" id="part_skin" data-code="part_skin"><label for="part_skin"><span class="ico">🖐️</span><span data-label="part_skin"></span></label></div><div class="choice"><input type="checkbox" id="part_whole" data-code="part_whole"><label for="part_whole"><span class="ico">🧍‍♀️</span><span data-label="part_whole"></span></label></div>
+</div><h3 class="sect" data-t="what">どのような症状ですか</h3><div class="grid" data-group="symptoms">
+<div class="choice"><input type="checkbox" id="sym_pain" data-code="sym_pain"><label for="sym_pain"><span class="ico">😣</span><span data-label="sym_pain"></span></label></div><div class="choice"><input type="checkbox" id="sym_fever" data-code="sym_fever"><label for="sym_fever"><span class="ico">🌡️</span><span data-label="sym_fever"></span></label></div><div class="choice"><input type="checkbox" id="sym_cough" data-code="sym_cough"><label for="sym_cough"><span class="ico">😷</span><span data-label="sym_cough"></span></label></div><div class="choice"><input type="checkbox" id="sym_nausea" data-code="sym_nausea"><label for="sym_nausea"><span class="ico">🤢</span><span data-label="sym_nausea"></span></label></div><div class="choice"><input type="checkbox" id="sym_diarrhea" data-code="sym_diarrhea"><label for="sym_diarrhea"><span class="ico">🚻</span><span data-label="sym_diarrhea"></span></label></div><div class="choice"><input type="checkbox" id="sym_constipation" data-code="sym_constipation"><label for="sym_constipation"><span class="ico">🚽</span><span data-label="sym_constipation"></span></label></div><div class="choice"><input type="checkbox" id="sym_dizzy" data-code="sym_dizzy"><label for="sym_dizzy"><span class="ico">💫</span><span data-label="sym_dizzy"></span></label></div><div class="choice"><input type="checkbox" id="sym_rash" data-code="sym_rash"><label for="sym_rash"><span class="ico">🟥</span><span data-label="sym_rash"></span></label></div><div class="choice"><input type="checkbox" id="sym_breath" data-code="sym_breath"><label for="sym_breath"><span class="ico">🫁</span><span data-label="sym_breath"></span></label></div><div class="choice"><input type="checkbox" id="sym_insomnia" data-code="sym_insomnia"><label for="sym_insomnia"><span class="ico">🌙</span><span data-label="sym_insomnia"></span></label></div>
+</div>
+<div class="fields">
+<div class="field"><label data-t="since">いつからですか</label><select id="since"><option value=""></option><option>今日</option><option>昨日</option><option>2～3日前</option><option>1週間くらい前</option><option>それより前</option><option>分かりません</option></select></div>
+<div class="field"><label data-t="severity">どのくらいですか</label><select id="severity"><option value=""></option><option>軽い</option><option>中くらい</option><option>強い</option></select></div>
+<div class="field"><label data-t="course">変化していますか</label><select id="course"><option value=""></option><option>よくなっている</option><option>変わらない</option><option>悪くなっている</option></select></div>
+<div class="field"><label data-t="relation">薬との関係</label><select id="relation"><option value=""></option><option>薬を使う前からあります</option><option>薬を使った後に始まりました</option><option>薬を使うと悪くなります</option><option>薬を使うとよくなります</option><option>分かりません</option></select></div>
+<div class="field"><label data-t="other">そのほか</label><textarea id="symNote"></textarea></div>
+</div>
+<div class="card critical"><strong data-t="emergency">息ができない、意識がおかしい、顔や口が急に腫れた、胸が強く痛む場合は、通常の相談ではなく緊急対応を検討します。</strong></div>
+<div class="actions"><button class="btn secondary" data-next="reception" data-t="back">戻る</button><button class="btn primary" data-next="safety" data-t="next">次へ</button></div></div>
+</section>
+
+<section id="safety" class="page"><div class="card"><h2 data-t="safe_title">薬を安全に使うための確認</h2><p class="lead" data-t="safe_lead">当てはまるものを選びます。</p><div class="grid" data-group="safety">
+<div class="choice"><input type="checkbox" id="safe_allergy" data-code="safe_allergy"><label for="safe_allergy"><span class="ico">🚫</span><span data-label="safe_allergy"></span></label></div><div class="choice"><input type="checkbox" id="safe_sideeffect" data-code="safe_sideeffect"><label for="safe_sideeffect"><span class="ico">⚠️</span><span data-label="safe_sideeffect"></span></label></div><div class="choice"><input type="checkbox" id="safe_othermeds" data-code="safe_othermeds"><label for="safe_othermeds"><span class="ico">💊</span><span data-label="safe_othermeds"></span></label></div><div class="choice"><input type="checkbox" id="safe_otc" data-code="safe_otc"><label for="safe_otc"><span class="ico">🛍️</span><span data-label="safe_otc"></span></label></div><div class="choice"><input type="checkbox" id="safe_supplement" data-code="safe_supplement"><label for="safe_supplement"><span class="ico">🌿</span><span data-label="safe_supplement"></span></label></div><div class="choice"><input type="checkbox" id="safe_pregnant" data-code="safe_pregnant"><label for="safe_pregnant"><span class="ico">🤰</span><span data-label="safe_pregnant"></span></label></div><div class="choice"><input type="checkbox" id="safe_breastfeed" data-code="safe_breastfeed"><label for="safe_breastfeed"><span class="ico">🍼</span><span data-label="safe_breastfeed"></span></label></div><div class="choice"><input type="checkbox" id="safe_drive" data-code="safe_drive"><label for="safe_drive"><span class="ico">🚗</span><span data-label="safe_drive"></span></label></div>
+<div class="choice"><input type="checkbox" id="safe_antidoping" data-code="safe_antidoping"><label for="safe_antidoping"><span class="ico">🏅</span><span data-label="safe_antidoping"></span></label></div>
+<div class="choice"><input type="checkbox" id="safe_surgery" data-code="safe_surgery"><label for="safe_surgery"><span class="ico">🏥</span><span data-label="safe_surgery"></span></label></div>
+<div class="choice"><input type="checkbox" id="safe_test" data-code="safe_test"><label for="safe_test"><span class="ico">🩻</span><span data-label="safe_test"></span></label></div>
+<div class="choice"><input type="checkbox" id="safe_vaccine" data-code="safe_vaccine"><label for="safe_vaccine"><span class="ico">💉</span><span data-label="safe_vaccine"></span></label></div>
+<div class="choice"><input type="checkbox" id="safe_dental" data-code="safe_dental"><label for="safe_dental"><span class="ico">🦷</span><span data-label="safe_dental"></span></label></div>
+<div class="choice"><input type="checkbox" id="safe_kidney" data-code="safe_kidney"><label for="safe_kidney"><span class="ico">🫘</span><span data-label="safe_kidney"></span></label></div>
+<div class="choice"><input type="checkbox" id="safe_liver" data-code="safe_liver"><label for="safe_liver"><span class="ico">🫀</span><span data-label="safe_liver"></span></label></div>
+<div class="choice"><input type="checkbox" id="safe_dialysis" data-code="safe_dialysis"><label for="safe_dialysis"><span class="ico">💧</span><span data-label="safe_dialysis"></span></label></div>
+
+<div class="choice"><input type="checkbox" id="safe_smoking" data-code="safe_smoking"><label for="safe_smoking"><span class="ico">🚬</span><span data-label="safe_smoking"></span></label></div>
+<div class="choice"><input type="checkbox" id="safe_caregiver" data-code="safe_caregiver"><label for="safe_caregiver"><span class="ico">👤</span><span data-label="safe_caregiver"></span></label></div>
+<div class="choice"><input type="checkbox" id="safe_alcohol" data-code="safe_alcohol"><label for="safe_alcohol"><span class="ico">🍺</span><span data-label="safe_alcohol"></span></label></div><div class="choice"><input type="checkbox" id="safe_unknown" data-code="safe_unknown"><label for="safe_unknown"><span class="ico">❔</span><span data-label="safe_unknown"></span></label></div>
+</div>
+<h3 class="sect" data-t="swallow_title">飲み込みづらい薬の形はありますか？</h3>
+<div class="grid" data-group="safety">
+<div class="choice"><input type="checkbox" id="swallow_tablet" data-code="swallow_tablet"><label for="swallow_tablet"><span class="ico">💊</span><span data-label="swallow_tablet"></span></label></div>
+<div class="choice"><input type="checkbox" id="swallow_capsule" data-code="swallow_capsule"><label for="swallow_capsule"><span class="ico">💊</span><span data-label="swallow_capsule"></span></label></div>
+<div class="choice"><input type="checkbox" id="swallow_powder" data-code="swallow_powder"><label for="swallow_powder"><span class="ico">🥄</span><span data-label="swallow_powder"></span></label></div>
+<div class="choice"><input type="checkbox" id="swallow_syrup" data-code="swallow_syrup"><label for="swallow_syrup"><span class="ico">🧴</span><span data-label="swallow_syrup"></span></label></div>
+<div class="choice"><input type="checkbox" id="swallow_none" data-code="swallow_none"><label for="swallow_none"><span class="ico">⭕</span><span data-label="swallow_none"></span></label></div>
+</div>
+<div class="fields">
+<div class="field"><label data-t="meal_times">食事の時刻</label><input id="mealTimes" placeholder="例：朝7時、昼12時、夕19時"></div>
+<div class="field"><label data-t="sleep_time">寝る時刻</label><input id="sleepTime" placeholder="例：22時"></div>
+<div class="field"><label data-t="wake_time">起きる時刻</label><input id="wakeTime" placeholder="例：6時"></div>
+<div class="field"><label data-t="planned_date">手術・検査・予防接種などの予定日</label><input id="plannedDate" placeholder="例：8月20日"></div>
+<div class="field"><label data-t="safety_note">安全確認について補足</label><textarea id="safetyNote" placeholder="例：透析は月・水・金、嚥下が難しい"></textarea></div>
+</div><div class="actions"><button class="btn secondary" data-next="symptoms" data-t="back">戻る</button><button class="btn primary" data-next="medicine" data-t="next">次へ</button></div></div></section>
+
+<section id="medicine" class="page"><div class="card"><h2 data-t="med_title">飲み薬の説明</h2><p class="lead" data-t="med_lead">曖昧な表現を避け、具体的な時間・量・条件を記入します。</p>
+<div class="drug-card"><div class="drug-title"><h3 data-t="drug1">薬 1</h3><span class="badge" data-t="not_saved">保存されません</span></div>
+<div class="fields">
+<div class="field"><label data-t="drug_name">薬の名前</label><input id="drugName"></div>
+<div class="field"><label data-t="drug_purpose">何のための薬ですか</label><select id="drugPurpose"><option value=""></option><option>痛みをやわらげる薬</option><option>熱を下げる薬</option><option>せきを抑える薬</option><option>痰を出しやすくする薬</option><option>アレルギーを抑える薬</option><option>血圧を下げる薬</option><option>血糖値を下げる薬</option><option>感染症を治療する薬</option><option>便を出しやすくする薬</option><option>眠りを助ける薬</option></select></div>
+<div class="field"><label data-t="dose">1回の量</label><input id="dose" placeholder="例：1錠、1包、5mL"></div>
+<div class="field"><label data-t="frequency">1日の回数</label><input id="frequency" placeholder="例：1日2回"></div>
+<div class="field"><label data-t="duration">使う期間</label><input id="duration" placeholder="例：7日間"></div>
+</div>
+<h3 class="sect" data-t="timing">使う時間</h3><div class="grid" data-group="medicine">
+<div class="choice"><input type="checkbox" id="time_before" data-code="time_before"><label for="time_before"><span class="ico">🍽️</span><span data-label="time_before"></span></label></div><div class="choice"><input type="checkbox" id="time_immediate" data-code="time_immediate"><label for="time_immediate"><span class="ico">🥢</span><span data-label="time_immediate"></span></label></div><div class="choice"><input type="checkbox" id="time_after" data-code="time_after"><label for="time_after"><span class="ico">🍚</span><span data-label="time_after"></span></label></div><div class="choice"><input type="checkbox" id="time_between" data-code="time_between"><label for="time_between"><span class="ico">↔️</span><span data-label="time_between"></span></label></div><div class="choice"><input type="checkbox" id="time_bed" data-code="time_bed"><label for="time_bed"><span class="ico">🌙</span><span data-label="time_bed"></span></label></div><div class="choice"><input type="checkbox" id="time_wake" data-code="time_wake"><label for="time_wake"><span class="ico">🌅</span><span data-label="time_wake"></span></label></div><div class="choice"><input type="checkbox" id="time_prn" data-code="time_prn"><label for="time_prn"><span class="ico">🆘</span><span data-label="time_prn"></span></label></div>
+</div>
+<div class="fields">
+<div class="field"><label data-t="specific_time">具体的な時刻</label><input id="specificTime" placeholder="例：朝7時、夕19時"></div>
+<div class="field"><label data-t="prn_condition">頓服を使う条件</label><input id="prnCondition" placeholder="例：頭が痛いとき、38.0℃以上"></div>
+<div class="field"><label data-t="interval">次に使うまでの間隔</label><input id="interval" placeholder="例：6時間以上"></div>
+<div class="field"><label data-t="maxday">1日の上限</label><input id="maxDay" placeholder="例：1日3回まで"></div>
+</div>
+<h3 class="sect" data-t="cautions">注意すること</h3><div class="grid" data-group="medicine">
+<div class="choice"><input type="checkbox" id="c_drowsy" data-code="c_drowsy"><label for="c_drowsy"><span class="ico">😴</span><span data-label="c_drowsy"></span></label></div><div class="choice"><input type="checkbox" id="c_nodrive" data-code="c_nodrive"><label for="c_nodrive"><span class="ico">🚗</span><span data-label="c_nodrive"></span></label></div><div class="choice"><input type="checkbox" id="c_noalcohol" data-code="c_noalcohol"><label for="c_noalcohol"><span class="ico">🍺</span><span data-label="c_noalcohol"></span></label></div><div class="choice"><input type="checkbox" id="c_continue" data-code="c_continue"><label for="c_continue"><span class="ico">🔁</span><span data-label="c_continue"></span></label></div><div class="choice"><input type="checkbox" id="c_water" data-code="c_water"><label for="c_water"><span class="ico">🥛</span><span data-label="c_water"></span></label></div><div class="choice"><input type="checkbox" id="c_storage" data-code="c_storage"><label for="c_storage"><span class="ico">📦</span><span data-label="c_storage"></span></label></div><div class="choice"><input type="checkbox" id="c_consult" data-code="c_consult"><label for="c_consult"><span class="ico">📞</span><span data-label="c_consult"></span></label></div>
+</div><div class="fields"><div class="field"><label data-t="med_note">そのほかの説明</label><textarea id="medNote"></textarea></div></div>
+
+<h3 class="sect" data-t="pharmacy_confirm_title">薬局から確認・説明すること</h3>
+<p class="small" data-t="pharmacy_confirm_lead">処方内容の確認や、医薬品の変更について説明するときに使います。</p>
+<div class="grid" data-group="pharmacyconfirm">
+<div class="choice"><input type="checkbox" id="pc_inquiry" data-code="pc_inquiry"><label for="pc_inquiry"><span class="ico">📞</span><span data-label="pc_inquiry"></span></label></div>
+<div class="choice"><input type="checkbox" id="pc_wait" data-code="pc_wait"><label for="pc_wait"><span class="ico">⏳</span><span data-label="pc_wait"></span></label></div>
+<div class="choice"><input type="checkbox" id="pc_brand_generic" data-code="pc_brand_generic"><label for="pc_brand_generic"><span class="ico">💊</span><span data-label="pc_brand_generic"></span></label></div>
+<div class="choice"><input type="checkbox" id="pc_prefer_brand" data-code="pc_prefer_brand"><label for="pc_prefer_brand"><span class="ico">①</span><span data-label="pc_prefer_brand"></span></label></div>
+<div class="choice"><input type="checkbox" id="pc_prefer_generic" data-code="pc_prefer_generic"><label for="pc_prefer_generic"><span class="ico">②</span><span data-label="pc_prefer_generic"></span></label></div>
+<div class="choice"><input type="checkbox" id="pc_no_preference" data-code="pc_no_preference"><label for="pc_no_preference"><span class="ico">↔️</span><span data-label="pc_no_preference"></span></label></div>
+<div class="choice"><input type="checkbox" id="pc_maker_change" data-code="pc_maker_change"><label for="pc_maker_change"><span class="ico">🏭</span><span data-label="pc_maker_change"></span></label></div>
+<div class="choice"><input type="checkbox" id="pc_same_ingredient" data-code="pc_same_ingredient"><label for="pc_same_ingredient"><span class="ico">＝</span><span data-label="pc_same_ingredient"></span></label></div>
+<div class="choice"><input type="checkbox" id="pc_appearance_change" data-code="pc_appearance_change"><label for="pc_appearance_change"><span class="ico">🎨</span><span data-label="pc_appearance_change"></span></label></div>
+<div class="choice"><input type="checkbox" id="pc_price_change" data-code="pc_price_change"><label for="pc_price_change"><span class="ico">💴</span><span data-label="pc_price_change"></span></label></div>
+</div>
+<div class="fields">
+<div class="field"><label data-t="inquiry_reason">病院へ確認する内容</label><input id="inquiryReason" placeholder="例：用法、日数、重複、相互作用"></div>
+<div class="field"><label data-t="maker_before">変更前のメーカー・製品名</label><input id="makerBefore"></div>
+<div class="field"><label data-t="maker_after">変更後のメーカー・製品名</label><input id="makerAfter"></div>
+</div>
+</div>
+<div class="actions"><button class="btn secondary" data-next="safety" data-t="back">戻る</button><button class="btn primary" data-next="external" data-t="next">次へ</button></div></div></section>
+
+<section id="external" class="page"><div class="card"><h2 data-t="ext_title">外用薬・吸入薬の説明</h2><p class="lead" data-t="ext_lead">薬の種類に合わせて必要な項目だけ使います。</p>
+<div class="fields"><div class="field"><label data-t="dosage_form">薬の種類</label><select id="dosageForm"><option value=""></option><option>目薬</option><option>点鼻薬</option><option>吸入薬</option><option>塗り薬</option><option>貼り薬</option><option>坐薬</option><option>うがい薬</option></select></div><div class="field"><label data-t="external_name">薬の名前</label><input id="externalName"></div><div class="field"><label data-t="external_use">使い方</label><input id="externalUse" placeholder="例：両目に1滴、1日3回"></div></div>
+<div class="grid" data-group="external">
+<div class="choice"><input type="checkbox" id="e_eye5" data-code="e_eye5"><label for="e_eye5"><span class="ico">👁️</span><span data-label="e_eye5"></span></label></div><div class="choice"><input type="checkbox" id="e_contact" data-code="e_contact"><label for="e_contact"><span class="ico">👓</span><span data-label="e_contact"></span></label></div><div class="choice"><input type="checkbox" id="e_wash" data-code="e_wash"><label for="e_wash"><span class="ico">🧼</span><span data-label="e_wash"></span></label></div><div class="choice"><input type="checkbox" id="e_gargle" data-code="e_gargle"><label for="e_gargle"><span class="ico">🚰</span><span data-label="e_gargle"></span></label></div><div class="choice"><input type="checkbox" id="e_remove" data-code="e_remove"><label for="e_remove"><span class="ico">🩹</span><span data-label="e_remove"></span></label></div><div class="choice"><input type="checkbox" id="e_rotate" data-code="e_rotate"><label for="e_rotate"><span class="ico">🔄</span><span data-label="e_rotate"></span></label></div><div class="choice"><input type="checkbox" id="e_thin" data-code="e_thin"><label for="e_thin"><span class="ico">🧴</span><span data-label="e_thin"></span></label></div><div class="choice"><input type="checkbox" id="e_fridge" data-code="e_fridge"><label for="e_fridge"><span class="ico">🧊</span><span data-label="e_fridge"></span></label></div>
+</div><div class="fields"><div class="field"><label data-t="external_note">そのほかの説明</label><textarea id="externalNote"></textarea></div></div>
+<div class="actions"><button class="btn secondary" data-next="medicine" data-t="back">戻る</button><button class="btn primary" data-next="teachback" data-t="next">次へ</button></div></div></section>
+
+<section id="teachback" class="page"><div class="card"><h2 data-t="tb_title">理解の確認</h2><p class="lead" data-t="tb_lead">「分かりましたか」だけでなく、患者さんに使い方を選び直してもらいます。</p>
+<h3 class="sect" data-t="understand">説明は分かりましたか</h3><div class="grid" data-group="teachback">
+<div class="choice"><input type="radio" name="understanding" id="u_yes" data-code="u_yes"><label for="u_yes"><span class="ico">😊</span><span data-label="u_yes"></span></label></div><div class="choice"><input type="radio" name="understanding" id="u_partial" data-code="u_partial"><label for="u_partial"><span class="ico">🤔</span><span data-label="u_partial"></span></label></div><div class="choice"><input type="radio" name="understanding" id="u_repeat" data-code="u_repeat"><label for="u_repeat"><span class="ico">🔁</span><span data-label="u_repeat"></span></label></div>
+</div>
+<div class="fields">
+<div class="field"><label data-t="tb_when">患者さんが選んだ使用時点</label><input id="tbWhen" placeholder="例：朝食後"></div>
+<div class="field"><label data-t="tb_amount">患者さんが答えた1回量</label><input id="tbAmount" placeholder="例：1錠"></div>
+<div class="field"><label data-t="tb_interval">患者さんが答えた間隔・上限</label><input id="tbInterval" placeholder="例：6時間以上、1日3回まで"></div>
+</div>
+<div id="matchResult" class="summary"></div>
+<div class="actions"><button class="btn secondary" data-next="external" data-t="back">戻る</button><button class="btn primary" data-next="review" data-t="next">次へ</button></div></div></section>
+
+<section id="review" class="page"><div class="card"><h2 data-t="review_title">内容の確認と印刷</h2><p class="lead" data-t="review_lead">患者さんから伝えられたことと、薬局から説明したことを分けて印刷します。</p>
+<div class="summary"><h3 data-t="sum_reception">受付・呼び出し</h3><div id="sumReception"></div></div>
+<div class="summary"><h3 data-t="sum_symptoms">症状</h3><div id="sumSymptoms"></div></div>
+<div class="summary"><h3 data-t="sum_safety">安全確認</h3><div id="sumSafety"></div></div>
+<div class="summary"><h3 data-t="sum_medicine">薬局からの説明</h3><div id="sumMedicine"></div></div>
+<div class="summary"><h3 data-t="sum_teachback">理解確認</h3><div id="sumTeachback"></div></div>
+<div class="fields"><div class="field"><label data-t="pharmacy">薬局名（任意）</label><input id="pharmacy"></div><div class="field"><label data-t="contact">連絡先（任意）</label><input id="contact"></div></div>
+<p class="notice" data-t="pdf_help">「印刷・PDF保存」を押すと印刷画面が開きます。プリンターを選べば紙に印刷でき、「PDFとして保存」を選べばPDFファイルとして保存できます。</p><div class="actions"><button class="btn secondary" data-next="teachback" data-t="back">戻る</button><button id="printBtn" class="btn print" data-t="print">印刷・PDF保存</button><button id="resetBtn" class="btn reset" data-t="reset">内容を消去</button></div></div></section>
+
+<footer class="site-footer">
+  <p><strong>利用上の注意：</strong>このツールは、薬局でのコミュニケーションを補助するためのものです。診断や緊急時対応を代替するものではありません。緊急性が疑われる場合は、通常の薬局相談ではなく適切な緊急対応を優先してください。</p>
+  <p>入力内容はこのページ内でのみ処理し、サーバーへ保存・送信する機能は実装していません。共有端末では、利用後に「内容を消去」してからページを閉じてください。</p>
+</footer>
+</div>
+
+<article class="print-sheet">
+<div class="print-meta"><div><h1 id="pTitle">薬局コミュニケーションシート</h1><div id="pDate"></div></div><div id="pPharmacy"></div></div>
+<h2 id="pH1">受付・呼び出し</h2><div class="print-box" id="pReception"></div>
+<h2 id="pH2">患者さんから伝えられたこと</h2><div class="print-box" id="pPatient"></div>
+<h2 id="pH3">薬を安全に使うための確認</h2><div class="print-box" id="pSafety"></div>
+<h2 id="pH4">薬局からお伝えしたこと</h2><div class="print-box" id="pMedicine"></div>
+<h2 id="pH5">理解の確認</h2><div class="print-box" id="pTeachback"></div>
+<div class="print-footer" id="pContact"></div>
+</article>
+
+<script>
+const T={
+ja:{title:"薬局コミュニケーション",subtitle:"指差しと文字で、受付から薬の説明まで確認できます",language:"表示することば",mode_label:"表示モード",mode_patient:"患者さん向けモード",mode_pharmacist:"薬剤師向けモード",privacy:"入力内容は保存・送信されません。印刷後は「内容を消去」を押してください。",nav1:"1 受付",nav2:"2 症状",nav3:"3 安全確認",nav4:"4 薬の説明",nav5:"5 外用薬",nav6:"6 理解確認",nav7:"7 確認・印刷",r_title:"受付で確認すること",r_lead:"今日の用件と、どのようにお知らせするかを選びます。",comm:"希望するコミュニケーション方法",purpose:"今日の用件",reception_confirm_title:"薬局から確認すること",call:"準備ができたときのお知らせ方法",wait:"待ち時間",delay:"時間がかかる理由",s_title:"症状を伝える",s_lead:"「どこ」「どんな症状」「いつから」「どの程度」を分けて確認します。",where:"どこですか",what:"どのような症状ですか",since:"いつからですか",severity:"どのくらいですか",course:"変化していますか",relation:"薬との関係",other:"そのほか",emergency:"息ができない、意識がおかしい、顔や口が急に腫れた、胸が強く痛む場合は、通常の相談ではなく緊急対応を検討します。",safe_title:"薬を安全に使うための確認",safe_lead:"当てはまるものを選びます。",meal_times:"食事の時刻",sleep_time:"寝る時刻",wake_time:"起きる時刻",swallow_title:"飲み込みづらい薬の形はありますか？",planned_date:"手術・検査・予防接種などの予定日",safety_note:"安全確認について補足",med_title:"飲み薬の説明",med_lead:"曖昧な表現を避け、具体的な時間・量・条件を記入します。",drug1:"薬 1",not_saved:"保存されません",drug_name:"薬の名前",drug_purpose:"何のための薬ですか",dose:"1回の量",frequency:"1日の回数",duration:"使う期間",timing:"使う時間",specific_time:"具体的な時刻",prn_condition:"頓服を使う条件",interval:"次に使うまでの間隔",maxday:"1日の上限",cautions:"注意すること",med_note:"そのほかの説明",pharmacy_confirm_title:"薬局から確認・説明すること",pharmacy_confirm_lead:"処方内容の確認や、医薬品の変更について説明するときに使います。",inquiry_reason:"病院へ確認する内容",maker_before:"変更前のメーカー・製品名",maker_after:"変更後のメーカー・製品名",ext_title:"外用薬・吸入薬の説明",ext_lead:"薬の種類に合わせて必要な項目だけ使います。",dosage_form:"薬の種類",external_name:"薬の名前",external_use:"使い方",external_note:"そのほかの説明",tb_title:"理解の確認",tb_lead:"「分かりましたか」だけでなく、患者さんに使い方を選び直してもらいます。",understand:"説明は分かりましたか",tb_when:"患者さんが選んだ使用時点",tb_amount:"患者さんが答えた1回量",tb_interval:"患者さんが答えた間隔・上限",review_title:"内容の確認と印刷",review_lead:"患者さんから伝えられたことと、薬局から説明したことを分けて印刷します。",sum_reception:"受付・呼び出し",sum_symptoms:"症状",sum_safety:"安全確認",sum_medicine:"薬局からの説明",sum_teachback:"理解確認",pharmacy:"薬局名（任意）",contact:"連絡先（任意）",pdf_help:"「印刷・PDF保存」を押すと印刷画面が開きます。プリンターを選べば紙に印刷でき、「PDFとして保存」を選べばPDFファイルとして保存できます。",next:"次へ",back:"戻る",print:"印刷・PDF保存",reset:"内容を消去",empty:"選択されていません",match:"説明内容と患者さんの回答をもう一度確認してください。"},
+easy:{title:"くすりやさんで つたえる",subtitle:"ゆびと もじで、うけつけから くすりの せつめいまで かくにんできます",language:"ことばを えらぶ",mode_label:"つかう ひと",mode_patient:"かんじゃさん むけ",mode_pharmacist:"くすりやさん むけ",privacy:"えらんだことは ほぞん・そうしんしません。いんさつしたあとに「けす」を おしてください。",nav1:"1 うけつけ",nav2:"2 しょうじょう",nav3:"3 あんぜん",nav4:"4 くすり",nav5:"5 そとからつかうくすり",nav6:"6 わかったか",nav7:"7 かくにん",r_title:"うけつけで かくにんすること",r_lead:"きょうの ようじと よびかたを えらびます。",comm:"どのように はなしますか",purpose:"きょうの ようじ",reception_confirm_title:"くすりやさんから かくにんすること",call:"できたときの しらせかた",wait:"まつ じかん",delay:"じかんが かかる わけ",s_title:"しょうじょうを つたえる",s_lead:"どこ・どんなしょうじょう・いつから・どのくらいを かくにんします。",where:"どこですか",what:"どんなしょうじょうですか",since:"いつからですか",severity:"どのくらいですか",course:"かわっていますか",relation:"くすりとの かんけい",other:"そのほか",emergency:"いきができない、いしきがおかしい、かおやくちがきゅうにはれた、むねがつよくいたいときは、すぐに たいおうします。",safe_title:"くすりを あんぜんに つかうための かくにん",safe_lead:"あてはまるものを えらびます。",meal_times:"ごはんの じかん",sleep_time:"ねる じかん",wake_time:"おきる じかん",swallow_title:"のみこみにくい くすりは ありますか",planned_date:"しゅじゅつ・けんさ・ワクチンなどの ひ",safety_note:"あんぜんの かくにんについて かくこと",med_title:"のむくすりの せつめい",med_lead:"じかん・りょう・つかうときを はっきり かきます。",drug1:"くすり 1",not_saved:"ほぞんしません",drug_name:"くすりの なまえ",drug_purpose:"なんのための くすりですか",dose:"1かいの りょう",frequency:"1にちの かいすう",duration:"つかう きかん",timing:"つかう じかん",specific_time:"じかん",prn_condition:"しょうじょうがあるときの じょうけん",interval:"つぎまで あける じかん",maxday:"1にちに つかえる かいすう",cautions:"きをつけること",med_note:"そのほか",pharmacy_confirm_title:"くすりやさんから かくにん・せつめいすること",pharmacy_confirm_lead:"しょほうの かくにんや くすりの へんこうを せつめいするときに つかいます。",inquiry_reason:"びょういんに かくにんすること",maker_before:"へんこうまえの メーカー・くすり",maker_after:"へんこうごの メーカー・くすり",ext_title:"めぐすり・ぬりぐすり・すうくすり",ext_lead:"くすりの しゅるいに あわせて えらびます。",dosage_form:"くすりの しゅるい",external_name:"くすりの なまえ",external_use:"つかいかた",external_note:"そのほか",tb_title:"わかったか かくにん",tb_lead:"あなたに つかいかたを えらんでもらいます。",understand:"せつめいは わかりましたか",tb_when:"あなたが えらんだ つかうじかん",tb_amount:"あなたが こたえた 1かいのりょう",tb_interval:"あなたが こたえた じかん・かいすう",review_title:"ないようを かくにんして いんさつ",review_lead:"あなたから つたえたことと くすりやさんから つたえたことを わけて いんさつします。",sum_reception:"うけつけ・よびかた",sum_symptoms:"しょうじょう",sum_safety:"あんぜん",sum_medicine:"くすりやさんから",sum_teachback:"わかったか",pharmacy:"くすりやさんの なまえ",contact:"れんらくさき",pdf_help:"「いんさつ・PDFほぞん」を おすと、いんさつの がめんが ひらきます。プリンターを えらぶと かみに いんさつできます。「PDFとしてほぞん」を えらぶと PDFに ほぞんできます。",next:"つぎへ",back:"もどる",print:"いんさつ・PDFほぞん",reset:"けす",empty:"えらばれていません",match:"せつめいと あなたの こたえを もういちど かくにんしてください。"}
+};
+const L={
+comm_point:{ja:"指差しで話したい",easy:"ゆびで さして はなしたい"},comm_write:{ja:"書いて話したい",easy:"かいて はなしたい"},comm_phone:{ja:"スマートフォンに文字を入力してほしい",easy:"スマートフォンに もじを いれてほしい"},comm_slow:{ja:"ゆっくり、短い文で話してほしい",easy:"ゆっくり みじかく はなしてほしい"},comm_lip:{ja:"口元が見えるように話してほしい",easy:"くちが みえるように はなしてほしい"},comm_support:{ja:"付き添いの人と一緒に確認したい",easy:"いっしょにきたひとと かくにんしたい"},
+purpose_rx:{ja:"処方せんを持ってきました",easy:"しょほうせんを もってきました"},purpose_receive:{ja:"薬を受け取りに来ました",easy:"くすりを もらいに きました"},purpose_consult:{ja:"薬について相談したいです",easy:"くすりの そうだんを したいです"},purpose_otc:{ja:"市販薬を相談したいです",easy:"みせでかう くすりを そうだんしたいです"},purpose_sideeffect:{ja:"薬を使って困ったことがあります",easy:"くすりを つかって こまりました"},purpose_shortage:{ja:"薬が足りません・余っています",easy:"くすりが たりない・あまっています"},purpose_payment:{ja:"会計について確認したいです",easy:"おかねの かくにんを したいです"},
+recept_myna_yes:{ja:"マイナ保険証を持っています",easy:"マイナほけんしょうを もっています"},
+recept_myna_no:{ja:"マイナ保険証を持っていません",easy:"マイナほけんしょうを もっていません"},
+recept_medbook_yes:{ja:"お薬手帳を持っています",easy:"おくすりてちょうを もっています"},
+recept_medbook_home:{ja:"お薬手帳は家にあります",easy:"おくすりてちょうは いえに あります"},
+recept_medbook_app:{ja:"電子版のお薬手帳を使っています",easy:"スマートフォンの おくすりてちょうを つかっています"},
+recept_medbook_no:{ja:"お薬手帳を持っていません",easy:"おくすりてちょうを もっていません"},
+call_near:{ja:"近くまで来て知らせてください",easy:"ちかくにきて しらせてください"},call_number:{ja:"番号を表示してください",easy:"ばんごうを みせてください"},call_screen:{ja:"スマートフォンの画面で知らせてください",easy:"スマートフォンで しらせてください"},call_support:{ja:"付き添いの人に知らせてください",easy:"いっしょにきたひとに しらせてください"},
+part_head:{ja:"頭",easy:"あたま"},part_eye:{ja:"目",easy:"め"},part_throat:{ja:"口・のど",easy:"くち・のど"},part_chest:{ja:"胸",easy:"むね"},part_abdomen:{ja:"おなか",easy:"おなか"},part_back:{ja:"背中・腰",easy:"せなか・こし"},part_skin:{ja:"皮膚",easy:"はだ"},part_whole:{ja:"全身",easy:"からだぜんぶ"},
+sym_pain:{ja:"痛い",easy:"いたい"},sym_fever:{ja:"熱がある",easy:"ねつがある"},sym_cough:{ja:"せき・鼻水",easy:"せき・はなみず"},sym_nausea:{ja:"吐き気・吐いた",easy:"きもちがわるい・はいた"},sym_diarrhea:{ja:"下痢",easy:"げり"},sym_constipation:{ja:"便秘",easy:"べんぴ"},sym_dizzy:{ja:"めまい・ふらつき",easy:"めまい・ふらふら"},sym_rash:{ja:"発疹・かゆみ",easy:"ぶつぶつ・かゆい"},sym_breath:{ja:"息苦しい",easy:"いきがくるしい"},sym_insomnia:{ja:"眠れない",easy:"ねむれない"},
+safe_allergy:{ja:"薬でアレルギーが出たことがあります",easy:"くすりで アレルギーが でたことがあります"},safe_sideeffect:{ja:"薬で副作用が出たことがあります",easy:"くすりで ぐあいが わるくなったことがあります"},safe_othermeds:{ja:"ほかの処方薬を使っています",easy:"ほかの くすりを つかっています"},safe_otc:{ja:"市販薬を使っています",easy:"みせでかった くすりを つかっています"},safe_supplement:{ja:"サプリメント・健康食品を使っています",easy:"サプリメントを つかっています"},safe_pregnant:{ja:"妊娠しています・可能性があります",easy:"にんしんしています・かもしれません"},safe_breastfeed:{ja:"授乳しています",easy:"あかちゃんに ちちを のませています"},safe_drive:{ja:"車や自転車を運転します",easy:"くるまや じてんしゃを うんてんします"},safe_antidoping:{ja:"アンチ・ドーピングへの配慮が必要です（競技者・大会参加予定など）",easy:"スポーツの ドーピングルールを かくにんする ひつようが あります"},
+safe_surgery:{ja:"手術の予定があります",easy:"しゅじゅつの よていが あります"},
+safe_test:{ja:"検査の予定があります（造影CT・内視鏡など）",easy:"けんさの よていが あります"},
+safe_vaccine:{ja:"予防接種の予定があります",easy:"ワクチンの よていが あります"},
+safe_dental:{ja:"歯科治療の予定があります",easy:"はいしゃの よていが あります"},
+safe_kidney:{ja:"腎臓の病気があります",easy:"じんぞうの びょうきが あります"},
+safe_liver:{ja:"肝臓の病気があります",easy:"かんぞうの びょうきが あります"},
+safe_dialysis:{ja:"透析を受けています",easy:"とうせきを うけています"},
+
+safe_smoking:{ja:"たばこ・加熱式たばこ・電子たばこを使います",easy:"たばこを すいます"},
+safe_caregiver:{ja:"薬の管理に家族・支援者の協力が必要です",easy:"くすりの かんりを てつだう ひとが ひつようです"},
+swallow_tablet:{ja:"錠剤",easy:"じょうざい"},
+swallow_capsule:{ja:"カプセル",easy:"カプセル"},
+swallow_powder:{ja:"粉ぐすり",easy:"こなぐすり"},
+swallow_syrup:{ja:"シロップ",easy:"シロップ"},
+swallow_none:{ja:"特にありません",easy:"ありません"},
+
+safe_alcohol:{ja:"お酒を飲みます",easy:"おさけを のみます"},safe_unknown:{ja:"分かりません",easy:"わかりません"},
+time_before:{ja:"食事を始める約30分前",easy:"ごはんの 30ぷんくらい まえ"},time_immediate:{ja:"薬を使った後、すぐ食事を始めます",easy:"くすりの あと すぐ ごはんを たべます"},time_after:{ja:"食事が終わってから30分以内",easy:"ごはんの あと 30ぷんいない"},time_between:{ja:"食事と食事の間（食後約2時間）",easy:"ごはんと ごはんの あいだ"},time_bed:{ja:"布団に入る約30分前",easy:"ねる 30ぷんくらい まえ"},time_wake:{ja:"朝起きたらすぐ",easy:"あさ おきたら すぐ"},time_prn:{ja:"症状があるとき",easy:"しょうじょうが あるとき"},
+c_drowsy:{ja:"眠くなることがあります",easy:"ねむくなることが あります"},c_nodrive:{ja:"車や自転車の運転は避けてください",easy:"くるまや じてんしゃを うんてんしないでください"},c_noalcohol:{ja:"お酒は避けてください",easy:"おさけを のまないでください"},c_continue:{ja:"自分の判断で中止しないでください",easy:"じぶんで やめないでください"},c_water:{ja:"コップ1杯の水で飲んでください",easy:"コップ1ぱいの みずで のんでください"},c_storage:{ja:"高温・直射日光を避けてください",easy:"あついところや ひのあたるところに おかないでください"},c_consult:{ja:"困ったときは薬局・医療機関へ相談してください",easy:"こまったら くすりやさんや びょういんへ そうだんしてください"},
+e_eye5:{ja:"複数の目薬は5分以上あけます",easy:"めぐすりは 5ふんいじょう あけます"},e_contact:{ja:"コンタクトレンズを外します",easy:"コンタクトレンズを はずします"},e_wash:{ja:"使用後に手を洗います",easy:"つかったあと てを あらいます"},e_gargle:{ja:"吸入後にうがいをします",easy:"すったあと うがいを します"},e_remove:{ja:"古い貼り薬をはがしてから貼ります",easy:"ふるい はりぐすりを はがします"},e_rotate:{ja:"同じ場所を避けて使います",easy:"おなじ ばしょを さけます"},e_thin:{ja:"薄く塗ります",easy:"うすく ぬります"},e_fridge:{ja:"冷蔵庫で保管します",easy:"れいぞうこに いれます"},
+pc_inquiry:{ja:"病院に処方内容を確認するため、連絡します",easy:"びょういんに しょほうを かくにんするため れんらくします"},
+pc_wait:{ja:"確認が終わるまで、少しお待ちください",easy:"かくにんが おわるまで すこし まってください"},
+pc_brand_generic:{ja:"先発医薬品と後発医薬品の希望を確認します",easy:"せんぱつの くすりと ジェネリックの きぼうを かくにんします"},
+pc_prefer_brand:{ja:"先発医薬品を希望します",easy:"せんぱつの くすりを きぼうします"},
+pc_prefer_generic:{ja:"後発医薬品（ジェネリック）を希望します",easy:"ジェネリックを きぼうします"},
+pc_no_preference:{ja:"どちらでもよいです",easy:"どちらでも よいです"},
+pc_maker_change:{ja:"同じ成分の別メーカーの薬に変更します",easy:"おなじ せいぶんの べつの メーカーの くすりに かわります"},
+pc_same_ingredient:{ja:"名前は違いますが、有効成分は同じです",easy:"なまえは ちがいますが きく せいぶんは おなじです"},
+pc_appearance_change:{ja:"色・形・大きさ・包装が変わることがあります",easy:"いろ・かたち・おおきさ・ふくろが かわることが あります"},
+pc_price_change:{ja:"薬の価格や自己負担額が変わることがあります",easy:"くすりの ねだんや はらう おかねが かわることが あります"},
+u_yes:{ja:"分かりました",easy:"わかりました"},u_partial:{ja:"一部、分かりません",easy:"わからないところが あります"},u_repeat:{ja:"もう一度説明してください",easy:"もういちど せつめいしてください"}
+};
+const q=id=>document.getElementById(id),lang=()=>q("lang").value,t=k=>T[lang()][k]||T.ja[k]||k,label=c=>(L[c]&&L[c][lang()])||(L[c]&&L[c].ja)||c;
+function currentMode(){return q("viewMode").value}
+function markModeElements(){
+  const pharmacistFieldIds=[
+    "wait","delay","mealTimes","sleepTime","wakeTime","plannedDate","safetyNote",
+    "drugName","drugPurpose","dose","frequency","duration","specificTime",
+    "prnCondition","interval","maxDay","medNote","inquiryReason","makerBefore",
+    "makerAfter","dosageForm","externalName","externalUse","externalNote",
+    "pharmacy","contact"
+  ];
+  pharmacistFieldIds.forEach(id=>{
+    const el=q(id);
+    if(el && el.closest(".field")) el.closest(".field").classList.add("pharmacist-only");
+  });
+
+  const pharmacyHeading=document.querySelector('[data-t="pharmacy_confirm_title"]');
+  if(pharmacyHeading){
+    let node=pharmacyHeading;
+    while(node){
+      node.classList.add("pharmacist-only");
+      node=node.nextElementSibling;
+    }
+  }
+
+  const pdfHelp=document.querySelector('[data-t="pdf_help"]');
+  if(pdfHelp) pdfHelp.classList.add("pharmacist-only");
+}
+function applyMode(){
+  const patient=currentMode()==="patient";
+  document.body.classList.toggle("patient-mode",patient);
+  document.body.classList.toggle("pharmacist-mode",!patient);
+  q("modeBadge").textContent=patient
+    ? (lang()==="easy" ? "👤 かんじゃさん むけ" : "👤 患者さん向けモード")
+    : (lang()==="easy" ? "💊 くすりやさん むけ" : "💊 薬剤師向けモード");
+}
+function apply(){document.querySelectorAll("[data-t]").forEach(e=>e.textContent=t(e.dataset.t));document.querySelectorAll("[data-label]").forEach(e=>e.textContent=label(e.dataset.label));
+document.querySelectorAll("[data-t-option]").forEach(e=>e.textContent=t(e.dataset.tOption));
+applyMode();
+review()}
+function show(id){document.querySelectorAll(".page").forEach(p=>p.classList.toggle("active",p.id===id));document.querySelectorAll(".nav button").forEach(b=>b.classList.toggle("active",b.dataset.page===id));if(id==="review")review();window.scrollTo({top:0,behavior:"smooth"})}
+function codes(g){return [...document.querySelectorAll(`[data-group="${g}"] input:checked`)].map(x=>x.dataset.code).filter(Boolean)}
+function esc(s){return String(s).replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")}
+function list(a){return a.length?`<ul>${a.map(x=>`<li>${esc(x)}</li>`).join("")}</ul>`:`<p class="empty">${t("empty")}</p>`}
+function reception(){let a=codes("reception").map(label);if(q("wait").value)a.push("待ち時間："+q("wait").value);if(q("delay").value)a.push(q("delay").value);return a}
+function symptoms(){let a=codes("symptoms").map(label);["since","severity","course","relation"].forEach(id=>{if(q(id).value)a.push(q(id).value)});if(q("symNote").value.trim())a.push(q("symNote").value.trim());return a}
+function safety(){let a=codes("safety").map(label);if(q("mealTimes").value.trim())a.push("食事："+q("mealTimes").value.trim());if(q("sleepTime").value.trim())a.push("就寝："+q("sleepTime").value.trim());if(q("wakeTime").value.trim())a.push("起床："+q("wakeTime").value.trim());if(q("plannedDate").value.trim())a.push("予定日："+q("plannedDate").value.trim());if(q("safetyNote").value.trim())a.push("補足："+q("safetyNote").value.trim());return a}
+function medicine(){let a=[];if(q("drugName").value.trim())a.push("薬の名前："+q("drugName").value.trim());if(q("drugPurpose").value)a.push(q("drugPurpose").value);if(q("dose").value.trim())a.push("1回の量："+q("dose").value.trim());if(q("frequency").value.trim())a.push("1日の回数："+q("frequency").value.trim());if(q("duration").value.trim())a.push("使う期間："+q("duration").value.trim());a.push(...codes("medicine").map(label));if(q("specificTime").value.trim())a.push("具体的な時刻："+q("specificTime").value.trim());if(q("prnCondition").value.trim())a.push("使う条件："+q("prnCondition").value.trim());if(q("interval").value.trim())a.push("間隔："+q("interval").value.trim());if(q("maxDay").value.trim())a.push("上限："+q("maxDay").value.trim());if(q("medNote").value.trim())a.push(q("medNote").value.trim());a.push(...codes("pharmacyconfirm").map(label));if(q("inquiryReason").value.trim())a.push("病院へ確認する内容："+q("inquiryReason").value.trim());if(q("makerBefore").value.trim())a.push("変更前："+q("makerBefore").value.trim());if(q("makerAfter").value.trim())a.push("変更後："+q("makerAfter").value.trim());if(q("dosageForm").value)a.push("外用薬："+q("dosageForm").value);if(q("externalName").value.trim())a.push("外用薬名："+q("externalName").value.trim());if(q("externalUse").value.trim())a.push("使い方："+q("externalUse").value.trim());a.push(...codes("external").map(label));if(q("externalNote").value.trim())a.push(q("externalNote").value.trim());return a}
+function teach(){let a=codes("teachback").map(label);if(q("tbWhen").value.trim())a.push("患者回答・使用時点："+q("tbWhen").value.trim());if(q("tbAmount").value.trim())a.push("患者回答・1回量："+q("tbAmount").value.trim());if(q("tbInterval").value.trim())a.push("患者回答・間隔等："+q("tbInterval").value.trim());return a}
+
+const pageOrder=["reception","symptoms","safety","medicine","external","teachback","review"];
+function pageHasContent(id){
+  if(id==="reception") return reception().length>0;
+  if(id==="symptoms") return symptoms().length>0;
+  if(id==="safety") return safety().length>0;
+  if(id==="medicine") return medicine().length>0;
+  if(id==="external"){
+    return Boolean(q("dosageForm").value || q("externalName").value.trim() || q("externalUse").value.trim() || q("externalNote").value.trim() || codes("external").length);
+  }
+  if(id==="teachback") return teach().length>0;
+  if(id==="review") return false;
+  return false;
+}
+function updateProgress(){
+  const startPointing=q("startPointing"), startConversation=q("startConversation");
+if(startPointing) startPointing.addEventListener("click",()=>{
+  show("reception");
+  const target=q("pointingTool");
+  if(target) target.scrollIntoView({behavior:"smooth",block:"start"});
+});
+if(startConversation) startConversation.addEventListener("click",()=>{
+  const target=q("conversationTool");
+  if(target) target.scrollIntoView({behavior:"smooth",block:"start"});
+  setTimeout(()=>{const field=q("staffMessage"); if(field) field.focus({preventScroll:true});},350);
+});
+
+document.querySelectorAll(".nav button").forEach(btn=>{
+    btn.classList.toggle("completed",pageHasContent(btn.dataset.page));
+  });
+}
+function review(){q("sumReception").innerHTML=list(reception());q("sumSymptoms").innerHTML=list(symptoms());q("sumSafety").innerHTML=list(safety());q("sumMedicine").innerHTML=list(medicine());q("sumTeachback").innerHTML=list(teach());q("matchResult").innerHTML=`<strong>${t("match")}</strong>`;updateProgress()}
+function preparePrint(){review();q("pDate").textContent=new Date().toLocaleDateString("ja-JP");q("pPharmacy").textContent=q("pharmacy").value.trim();q("pReception").innerHTML=list(reception());q("pPatient").innerHTML=list(symptoms());q("pSafety").innerHTML=list(safety());q("pMedicine").innerHTML=list(medicine());q("pTeachback").innerHTML=list(teach());q("pContact").textContent=q("contact").value.trim()?"連絡先："+q("contact").value.trim():""}
+document.querySelectorAll("[data-large-source]").forEach(b=>{
+  b.addEventListener("click",()=>{
+    const source=q(b.dataset.largeSource);
+    const target=q(b.dataset.largeTarget);
+    target.textContent=source.value.trim();
+  });
+});
+document.querySelectorAll("[data-clear-message]").forEach(b=>{
+  b.addEventListener("click",()=>{
+    q(b.dataset.clearMessage).value="";
+    q(b.dataset.clearTarget).textContent="";
+    q(b.dataset.clearMessage).focus();
+  });
+});
+
+document.querySelectorAll("[data-next]").forEach(b=>b.onclick=()=>show(b.dataset.next));document.querySelectorAll(".nav button").forEach(b=>b.onclick=()=>show(b.dataset.page));document.querySelectorAll("input,select,textarea").forEach(e=>{e.addEventListener("input",review);e.addEventListener("change",review)});q("lang").onchange=apply;q("viewMode").onchange=applyMode;q("printBtn").onclick=()=>{preparePrint();window.print()};q("resetBtn").onclick=()=>{if(confirm("選択内容をすべて消去します。よろしいですか？")){document.querySelectorAll("input").forEach(x=>{if(x.type==="checkbox"||x.type==="radio")x.checked=false;else x.value=""});document.querySelectorAll("textarea").forEach(x=>x.value="");document.querySelectorAll(".conversation-display").forEach(x=>x.textContent="");document.querySelectorAll("select").forEach(x=>{if(x.id!=="lang")x.selectedIndex=0});review();show("reception")}};markModeElements();apply();
+</script>
+</body></html>
